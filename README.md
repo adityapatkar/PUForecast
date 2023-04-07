@@ -3,10 +3,6 @@ MSML604 (Introduction to Optimization Project: Predicting the output of unpredic
 
 Delay-based PUFs are microelectronic circuits that produce unpredictable output values, making them challenging predict. This project aims to predict the output of delay-based PUFs by developing machine learning models that analyze the delay characteristics of these units. The resulting models can help increase the reliability and security of PUF-based systems. This repository contains the code and resources for training and evaluating these models.
 
-# PUF Predictor
-
-This project is part of the MSML604: Introduction to Optimization course at the University of Maryland. It aims to predict the output of delay-based PUFs using machine learning models.
-
 ## Introduction
 
 For a detailed introduction to the project, please refer to the `MSML_604_Project.pdf` file.
