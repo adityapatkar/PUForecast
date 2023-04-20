@@ -1,5 +1,5 @@
 # PUForecast
-MSML604 (Introduction to Optimization) Project: Predicting the output of unpredictable microelectronic Circuits
+MSML604 (Introduction to Optimization) Project: Predicting the output of unpredictable microelectronic circuits
 
 Delay-based PUFs are microelectronic circuits that produce unpredictable output values, making them challenging to predict. This project aims to predict the output of delay-based PUFs by developing machine learning models that analyze the delay characteristics of these units. This repository contains the code and resources for training and evaluating these models.
 
@@ -13,7 +13,7 @@ To get started with development, please follow these steps:
 
 1. Clone this repository to your local machine.
 2. Create a new branch called `<your_name>/<model_architecture>` from the `main` branch.
-3. Make changes to the `predict.m` file.
+3. Make changes to the `predict.m` or `predict.py` file.
 4. When you're ready to commit your changes, push them to your branch.
 
 ## Requirements
