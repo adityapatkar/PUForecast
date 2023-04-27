@@ -26,7 +26,7 @@ for i in range(1, n+2):
 # ADD YOUR DATASET GENERATION CODE HERE
 
 print("Generating training set...")
-training_size = 10000
+training_size = 8350
 X = np.random.randint(0, 2, size=(training_size, n)) 
 y = np.zeros((training_size, 1))
 for i in range(training_size):
