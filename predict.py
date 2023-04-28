@@ -48,22 +48,31 @@ r = puf_query(c, w)
 
 # You can use the puf_query function to generate your training dataset
 # ADD YOUR DATASET GENERATION CODE HERE
-training_size = 100
+training_size = 10000
 training_c = []
 training_r = []
 
 for i in range(0,training_size):
   c = np.random.randint(0, 2, size=(1, n))  # a random challenge vector
   r = puf_query(c, w)
-  # temp = np.concatenate((c, r), axis=None)
-  
-  training_c.append(c)
+
+  n = c.shape[1]
+  phi = np.ones(n+1)
+  phi[n] = 1
+  for j in range(n-1, -1, -1):
+        phi[j] = (2*c[0,j]-1)*phi[j+1]
+  training_c.append(phi)
   training_r.append(r)
+  if i % 1000 == 0:
+    print(i)
 
-training_c = np.array(training_c).reshape(100,-1)
-training_r = np.array(training_r).reshape(100,-1)
 
-X_train, X_test, y_train, y_test = train_test_split(training_c, training_r, test_size=0.20, random_state=42)
+training_c = np.array(training_c).reshape(training_size,-1)
+training_r = np.array(training_r).reshape(training_size,-1)
+
+# X_train, X_test, y_train, y_test = train_test_split(training_c, training_r, test_size=0.20, random_state=42)
+
+from sklearn.ensemble import AdaBoostClassifier
 
 w0 = np.zeros((n+1, 1))  # The estimated value of w.
 # Try to estimate the value of w here. This section will be timed. You are
@@ -71,10 +80,11 @@ w0 = np.zeros((n+1, 1))  # The estimated value of w.
 # the training time.
 t0 = time.process_time()
 # ADD YOUR TRAINING CODE HERE
-from sklearn.ensemble import RandomForestClassifier
 
-model = RandomForestClassifier()
-model.fit(X_train, y_train)
+
+
+model = AdaBoostClassifier()
+model.fit(training_c, training_r)
 
 # for i in range(1, n+2):
 #     randi_offset = np.random.randint(1, len(data)+1)
@@ -87,8 +97,47 @@ training_time = t1 - t0  # time taken to get w0
 print("Training time:", training_time)
 print("Training size:", training_size)
 
-pred = model.predict(X_test)
-pred
+# Evaluate your result
+n_test = 10000
+correct = 0
+for i in range(1, n_test+1):
+    c_test = np.random.randint(0, 2, size=(1, n))  # a random challenge vector
+    r = puf_query(c_test, w)
+    # r0 = puf_query(c_test, w0)
+
+    n = c_test.shape[1]
+    phi_test = np.ones(n+1)
+    phi_test[n] = 1
+    for j in range(n-1, -1, -1):
+          phi_test[j] = (2*c_test[0,j]-1)*phi_test[j+1]
+    r0 =  model.predict(phi_test.reshape(1, -1))
+    correct += (r==r0)
+
+    if i % 1000 == 0:
+      print(i)
+
+success_rate = correct/n_test
+print("Success rate:", success_rate)
+
+# If the success rate is less than 99%, a penalty time will be added
+# One second is add for each 0.01% below 99%.
+effective_training_time = training_time
+if success_rate < 0.99:
+    effective_training_time = training_time + 10000*(0.99-success_rate)
+print("Effective training time:", effective_training_time)
+
+from sklearn.ensemble import GradientBoostingClassifier
+
+t0 = time.process_time()
+
+
+model = GradientBoostingClassifier()
+model.fit(training_c, training_r)
+
+t1 = time.process_time()
+training_time = t1 - t0  # time taken to get w0
+print("Training time:", training_time)
+print("Training size:", training_size)
 
 # Evaluate your result
 n_test = 10000
@@ -97,8 +146,101 @@ for i in range(1, n_test+1):
     c_test = np.random.randint(0, 2, size=(1, n))  # a random challenge vector
     r = puf_query(c_test, w)
     # r0 = puf_query(c_test, w0)
-    r0 =  model.predict(c_test)
+
+    n = c_test.shape[1]
+    phi_test = np.ones(n+1)
+    phi_test[n] = 1
+    for j in range(n-1, -1, -1):
+          phi_test[j] = (2*c_test[0,j]-1)*phi_test[j+1]
+    r0 =  model.predict(phi_test.reshape(1, -1))
     correct += (r==r0)
+
+    if i % 1000 == 0:
+      print(i)
+
+success_rate = correct/n_test
+print("Success rate:", success_rate)
+
+# If the success rate is less than 99%, a penalty time will be added
+# One second is add for each 0.01% below 99%.
+effective_training_time = training_time
+if success_rate < 0.99:
+    effective_training_time = training_time + 10000*(0.99-success_rate)
+print("Effective training time:", effective_training_time)
+
+from sklearn.ensemble import RandomForestClassifier
+
+t0 = time.process_time()
+
+
+model = RandomForestClassifier()
+model.fit(training_c, training_r)
+
+t1 = time.process_time()
+training_time = t1 - t0  # time taken to get w0
+print("Training time:", training_time)
+print("Training size:", training_size)
+
+# Evaluate your result
+n_test = 10000
+correct = 0
+for i in range(1, n_test+1):
+    c_test = np.random.randint(0, 2, size=(1, n))  # a random challenge vector
+    r = puf_query(c_test, w)
+    # r0 = puf_query(c_test, w0)
+
+    n = c_test.shape[1]
+    phi_test = np.ones(n+1)
+    phi_test[n] = 1
+    for j in range(n-1, -1, -1):
+          phi_test[j] = (2*c_test[0,j]-1)*phi_test[j+1]
+    r0 =  model.predict(phi_test.reshape(1, -1))
+    correct += (r==r0)
+
+    if i % 1000 == 0:
+      print(i)
+
+success_rate = correct/n_test
+print("Success rate:", success_rate)
+
+# If the success rate is less than 99%, a penalty time will be added
+# One second is add for each 0.01% below 99%.
+effective_training_time = training_time
+if success_rate < 0.99:
+    effective_training_time = training_time + 10000*(0.99-success_rate)
+print("Effective training time:", effective_training_time)
+
+from sklearn.ensemble import BaggingClassifier
+
+t0 = time.process_time()
+
+
+model = BaggingClassifier()
+model.fit(training_c, training_r)
+
+t1 = time.process_time()
+training_time = t1 - t0  # time taken to get w0
+print("Training time:", training_time)
+print("Training size:", training_size)
+
+# Evaluate your result
+n_test = 10000
+correct = 0
+for i in range(1, n_test+1):
+    c_test = np.random.randint(0, 2, size=(1, n))  # a random challenge vector
+    r = puf_query(c_test, w)
+    # r0 = puf_query(c_test, w0)
+
+    n = c_test.shape[1]
+    phi_test = np.ones(n+1)
+    phi_test[n] = 1
+    for j in range(n-1, -1, -1):
+          phi_test[j] = (2*c_test[0,j]-1)*phi_test[j+1]
+    r0 =  model.predict(phi_test.reshape(1, -1))
+    correct += (r==r0)
+
+    if i % 1000 == 0:
+      print(i)
 
 success_rate = correct/n_test
 print("Success rate:", success_rate)
