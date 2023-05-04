@@ -4,7 +4,7 @@ function [w, costs] = gradDesc(rep, lr, w, phi, y, m)
         cur = (phi*w > 0);
         hc = cur - y;
         temp = sum(hc .* phi);
-        w = w - (lr*(1/m)) * temp';
+        w = w - (lr*(2/m)) * temp';
         costs(r) = cost(w,phi,y);
     end
 end
